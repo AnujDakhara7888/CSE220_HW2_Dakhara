@@ -361,104 +361,104 @@ int main(int argc, char **argv)
             }
         }
     }
-    else
-    {
-        //Get height and width of SBU file
-        unsigned int height, width;
-        fscanf(inpFile, "%u %u", &width, &height);
+    // else
+    // {
+    //     //Get height and width of SBU file
+    //     unsigned int height, width;
+    //     fscanf(inpFile, "%u %u", &width, &height);
         
-        //getting the max color value from the PPM
-        unsigned int numOfColors;
-        fscanf(inpFile, "%u", &numOfColors);
-        //Creating 2d array of height and width*3    
-         unsigned int store[numOfColors*3]; //Width*3 as each pixel has 3 values rgb
+    //     //getting the max color value from the PPM
+    //     unsigned int numOfColors;
+    //     fscanf(inpFile, "%u", &numOfColors);
+    //     //Creating 2d array of height and width*3    
+    //      unsigned int store[numOfColors*3]; //Width*3 as each pixel has 3 values rgb
 
-        //Read the file and store it in the array
-        for(unsigned int i=0;i<numOfColors*3;i++)
-        {    
-            unsigned int input;
-            fscanf(inpFile, "%u ", &input);
-            store[i]=input;
-        }
-        printf("store is %d\n",store[(numOfColors*3)-1]);
-        //Storing which pixel where in a different array
-        unsigned int colorStore[height][width];
-        for(unsigned int i=0;i<height;i++)
-        {
-            for(unsigned int j=0;j<width;j++)
-            {
-                unsigned char input[10];
-                fscanf(inpFile, "%s\n ",input);
-                if(*input=='*')
-                {
-                    unsigned int count = atoi((char*)(input + 1));
-                    unsigned int value;
-                    fscanf(inpFile,"%u",&value);
-                    int x=0;
-                    while(count!=0)
-                    {
-                        if(j<width)
-                        {
-                           colorStore[i][j]=value;
-                        }
-                        else
-                        {
-                            x=1;
-                            break;
-                        }
-                        count--;
-                        if(count==0)
-                        {
-                            break;
-                        }
-                        else
-                        {
-                            j++;
-                        }
-                    }
+    //     //Read the file and store it in the array
+    //     for(unsigned int i=0;i<numOfColors*3;i++)
+    //     {    
+    //         unsigned int input;
+    //         fscanf(inpFile, "%u ", &input);
+    //         store[i]=input;
+    //     }
+    //     printf("store is %d\n",store[(numOfColors*3)-1]);
+    //     //Storing which pixel where in a different array
+    //     unsigned int colorStore[height][width];
+    //     for(unsigned int i=0;i<height;i++)
+    //     {
+    //         for(unsigned int j=0;j<width;j++)
+    //         {
+    //             unsigned char input[10];
+    //             fscanf(inpFile, "%s\n ",input);
+    //             if(*input=='*')
+    //             {
+    //                 unsigned int count = atoi((char*)(input + 1));
+    //                 unsigned int value;
+    //                 fscanf(inpFile,"%u",&value);
+    //                 int x=0;
+    //                 while(count!=0)
+    //                 {
+    //                     if(j<width)
+    //                     {
+    //                        colorStore[i][j]=value;
+    //                     }
+    //                     else
+    //                     {
+    //                         x=1;
+    //                         break;
+    //                     }
+    //                     count--;
+    //                     if(count==0)
+    //                     {
+    //                         break;
+    //                     }
+    //                     else
+    //                     {
+    //                         j++;
+    //                     }
+    //                 }
                     
-                    if(x==1)
-                    {
-                        j=0;
-                        while(count!=0)
-                        {
-                            colorStore[i+1][j]=value;
-                            if(count==0)
-                            {
-                                break;
-                            }
-                            else
-                            {
-                                j++;
-                            }
-                            count--;
-                        }
-                    }
-                }
-                else
-                {
-                    colorStore[i][j]=atoi((char*)input);
-                }
-            }
-        }
-        // printing the sbu file
-        // fprintf(outFile,"%s\n%u %u\n%u ",&file,width,height,numOfColors);
-        printf("%d\n",colorStore[0][0]);
-        // for(int i=0;i<numOfColors*3;i++)
-        // {
-        //     fprintf("%u ",store[i]);
-        // }
-        // for(int i=0;i<height;i++)
-        // {
-        //     for(int j=0;j<width;j++)
-        //     {
-        //         f
-        //     }
-        // }
+    //                 if(x==1)
+    //                 {
+    //                     j=0;
+    //                     while(count!=0)
+    //                     {
+    //                         colorStore[i+1][j]=value;
+    //                         if(count==0)
+    //                         {
+    //                             break;
+    //                         }
+    //                         else
+    //                         {
+    //                             j++;
+    //                         }
+    //                         count--;
+    //                     }
+    //                 }
+    //             }
+    //             else
+    //             {
+    //                 colorStore[i][j]=atoi((char*)input);
+    //             }
+    //         }
+    //     }
+    //     // printing the sbu file
+    //     // fprintf(outFile,"%s\n%u %u\n%u ",&file,width,height,numOfColors);
+    //     printf("%d\n",colorStore[0][0]);
+    //     // for(int i=0;i<numOfColors*3;i++)
+    //     // {
+    //     //     fprintf("%u ",store[i]);
+    //     // }
+    //     // for(int i=0;i<height;i++)
+    //     // {
+    //     //     for(int j=0;j<width;j++)
+    //     //     {
+    //     //         f
+    //     //     }
+    //     // }
 
-        // 
+    //     // 
 
-    }
+    // }
 fclose(inpFile);
 fclose(outFile);
 return 0;
