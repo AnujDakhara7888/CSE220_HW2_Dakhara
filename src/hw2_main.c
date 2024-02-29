@@ -101,15 +101,7 @@ int main(int argc, char **argv)
         }
         else
         {
-            if(!strcmp(argv[i],"./build/hw2_main"))
-            {
-                continue;
-            }
-            else
-            {
-                printf("here");
-                check[5]++;
-            }
+            check[5]++;
         }
     }
     if((check[0]==0) || (check[1]==0))
@@ -367,8 +359,8 @@ int main(int argc, char **argv)
             {
                 fprintf(outFile,"%u %u %u ",store[i][j],store[i][j+1],store[i][j+2]);
             }
-            fprintf(outFile,"\n");
         }
+        fprintf(outFile,"\n");
     }
     //
     // else

@@ -27,6 +27,7 @@ TEST_F(validate_args_TestSuite, missing_o_arg) {
 
 // -i argument is missing
 TEST_F(validate_args_TestSuite, missing_i_arg) {
+	// int status = run_using_system("-o ./tests/actual_outputs/result.ppm -r \"I love SBU\",\"fonts/font3.txt\",1,4,2");
 	int status = run_using_system("-o ./tests/actual_output/result.ppm -r \"I love SBU\",\"fonts/font3.txt\",1,4,2");
 	EXPECT_EQ(MISSING_ARGUMENT, WEXITSTATUS(status));
 }

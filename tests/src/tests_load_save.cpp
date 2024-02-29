@@ -16,16 +16,16 @@ class image_operations_TestSuite : public testing::Test {
 	}
 };
 
-extern char cmd[300];
+extern char pargs[300];
 
 // Load PPM image and copy it to PPM
 TEST_F(image_operations_TestSuite, load_ppm_save_ppm) {
     const char *input_file = "./tests/images/seawolf.ppm";
     const char *expected_output_file = "./tests/images/seawolf.ppm";
     const char *actual_output_file = "./tests/actual_outputs/result.ppm";
-    sprintf(cmd, "./build/hw2_main -i %s -o %s", input_file, actual_output_file);
-    INFO(cmd);
-	int status = run_using_system(cmd);
+    sprintf(pargs, "-i %s -o %s", input_file, actual_output_file);
+    INFO(pargs);
+	int status = run_using_system(pargs);
 	EXPECT_EQ(0, WEXITSTATUS(status));
     check_image_file_contents(expected_output_file, actual_output_file);
 }
@@ -35,9 +35,9 @@ TEST_F(image_operations_TestSuite, load_ppm_save_sbu) {
     const char *input_file = "./tests/images/seawolf.ppm";
     const char *expected_output_file = "./tests/images/seawolf.sbu";
     const char *actual_output_file = "./tests/actual_outputs/result.sbu";
-    sprintf(cmd, "./build/hw2_main -o %s -i %s", actual_output_file, input_file);
-    INFO(cmd);
-	int status = run_using_system(cmd);
+    sprintf(pargs, "-o %s -i %s", actual_output_file, input_file);
+    INFO(pargs);
+	int status = run_using_system(pargs);
 	EXPECT_EQ(0, WEXITSTATUS(status));
     check_image_file_contents(expected_output_file, actual_output_file);
 }
@@ -47,9 +47,9 @@ TEST_F(image_operations_TestSuite, load_sbu_save_sbu) {
     const char *input_file = "./tests/images/desert.sbu";
     const char *expected_output_file = "./tests/images/desert.sbu";
     const char *actual_output_file = "./tests/actual_outputs/result.sbu";
-    sprintf(cmd, "./build/hw2_main -i %s -o %s", input_file, actual_output_file);
-    INFO(cmd);
-	int status = run_using_system(cmd);
+    sprintf(pargs, "-i %s -o %s", input_file, actual_output_file);
+    INFO(pargs);
+	int status = run_using_system(pargs);
 	EXPECT_EQ(0, WEXITSTATUS(status));
     check_image_file_contents(expected_output_file, actual_output_file);
 }
@@ -59,9 +59,9 @@ TEST_F(image_operations_TestSuite, load_sbu_save_ppm) {
     const char *input_file = "./tests/images/desert.sbu";
     const char *expected_output_file = "./tests/images/desert.ppm";
     const char *actual_output_file = "./tests/actual_outputs/result.ppm";
-    sprintf(cmd, "./build/hw2_main -o %s -i %s", actual_output_file, input_file);
-    INFO(cmd);
-	int status = run_using_system(cmd);
+    sprintf(pargs, "-o %s -i %s", actual_output_file, input_file);
+    INFO(pargs);
+	int status = run_using_system(pargs);
 	EXPECT_EQ(0, WEXITSTATUS(status));
     check_image_file_contents(expected_output_file, actual_output_file);
 }
