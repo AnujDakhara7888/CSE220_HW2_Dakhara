@@ -355,10 +355,11 @@ int main(int argc, char **argv)
         fprintf(outFile,"%s\n%u %u\n%u\n",&file,width,height,max_color);
         for(unsigned int i=0;i<height;i++)
         {
-            for(unsigned int j=0;j<width*3;j+=3)
+            for(unsigned int j=0;j<width*3;j++)
             {
-                fprintf(outFile,"%u %u %u ",store[i][j],store[i][j+1],store[i][j+2]);
+                fprintf(outFile,"%u ",store[i][j]);
             }
+            fprintf(outFile,"\n");
         }
         fprintf(outFile,"\n");
     }
@@ -465,5 +466,3 @@ fclose(inpFile);
 fclose(outFile);
 return 0;
 }
-
-    
