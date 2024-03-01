@@ -215,10 +215,10 @@ int main(int argc, char **argv)
 //After getting all the values and checking if any of those valkue is invalid
 
 
-    char file;
-    fscanf(inpFile,"%s",&file);
+    char file[10];
+    fscanf(inpFile,"%s",file);
     //Check if the file is P3
-    if(!strcmp(&file,"P3"))
+    if(!strcmp(file,"P3"))
     {
         //Get height and width of PPM file
         unsigned int height, width;
@@ -352,7 +352,7 @@ int main(int argc, char **argv)
                 }
             }
         }
-        fprintf(outFile,"%s\n%u %u\n%u\n",&file,width,height,max_color);
+        fprintf(outFile,"%s\n%u %u\n%u\n",file,width,height,max_color);
         for(unsigned int i=0;i<height;i++)
         {
             for(unsigned int j=0;j<width*3;j++)
