@@ -379,6 +379,7 @@ int main(int argc, char **argv)
         {
             unsigned int colorTable[height*width][3];
             unsigned int whereToStore[height*width];
+            //
             unsigned int colorTablesize=0;
             unsigned int tempIndex=0;
             unsigned int storeIndex=0;
