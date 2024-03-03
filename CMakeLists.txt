@@ -25,6 +25,13 @@ target_compile_options(hw2_main PUBLIC -Wall -Wextra -Wshadow -Wpedantic -Wdoubl
 target_link_libraries(hw2_main PRIVATE m)
 target_include_directories(hw2_main PUBLIC include)
 
+# Build main executable with address sanitizer
+add_executable(hw2_main_sanitizer src/hw2_main.c)
+target_compile_options(hw2_main_sanitizer PUBLIC -g -fsanitize=address -Wall -Wextra -Wshadow -Wpedantic -Wdouble-promotion -Wformat=2 -Wundef -Werror)
+target_link_options(hw2_main_sanitizer PUBLIC -fsanitize=address)
+target_link_libraries(hw2_main_sanitizer PRIVATE m)
+target_include_directories(hw2_main_sanitizer PUBLIC include)
+
 # Build standalone test case suites for CodeGrade. These are separate executables so that CodeGrade can run them individually.
 file(GLOB SOURCES tests/src/tests_*.cpp)
 set(TEST_SUITES "combined_operations" "copy_paste" "load_save" "printing" "validate_args" "combined_operations_valgrind" "copy_paste_valgrind" "load_save_valgrind" "printing_valgrind")
@@ -42,4 +49,3 @@ else()
   target_include_directories(run_all_tests PUBLIC include tests/include)
   target_link_libraries(run_all_tests PRIVATE gtest gtest_main pthread m)
 endif()
-

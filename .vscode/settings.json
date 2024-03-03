@@ -3,7 +3,10 @@
         "unistd.h": "c",
         "gtest.h": "c",
         "ostream": "cpp",
-        "cstddef": "cpp"
+        "cstddef": "cpp",
+        "typeinfo": "c",
+        "variant": "c",
+        "atomic": "c"
     }
     //"C_Cpp.intelliSenseEngine": "disabled"
 }

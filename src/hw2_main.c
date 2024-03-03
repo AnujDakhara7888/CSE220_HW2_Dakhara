@@ -137,8 +137,7 @@ int main(int argc, char **argv)
     }
     if(check[2]>0)
     {
-        
-        char str[strlen(argv[cposition])];
+        char str[100] = {"\0"};
         strcpy(str,argv[cposition]);
         int index = 0;
         char *token = strtok(str, ",");
@@ -160,7 +159,7 @@ int main(int argc, char **argv)
     }
     if(check[3]>0)
     {
-        char str1[strlen(argv[cposition])];
+        char str1[100] = {'\0'};
         strcpy(str1,argv[pposition]);
         int index1 = 0;
         char *token1 = strtok(str1, ",");
@@ -182,7 +181,7 @@ int main(int argc, char **argv)
     }
     if(check[4]>0)
     {
-        char str2[strlen(argv[cposition])];
+        char str2[100] = {'\0'};
         strcpy(str2,argv[rposition]);
         int index3 = 0;
         char *token2 = strtok(str2, ",");
@@ -211,6 +210,7 @@ int main(int argc, char **argv)
             return R_ARGUMENT_INVALID;
         }
     }
+
 
 //After getting all the values and checking if any of those valkue is invalid
     char *lastChar = argv[outputfile];
@@ -242,8 +242,8 @@ int main(int argc, char **argv)
         //If we need to Copy Go in this if
         if(check[2]==1 &&!strcmp(&lastChar[strlen(argv[outputfile])-1],"m"))
         {
-            //Get the parameters of copy
-            char copyPara[strlen(argv[cposition])];
+            // Get the parameters of copy
+            char copyPara[100] = {'\0'};
             strcpy(copyPara,argv[cposition]);
             unsigned int index[4] = {0,0,0,0};
             int cursor=0;
@@ -293,19 +293,10 @@ int main(int argc, char **argv)
                 }
                 iIndex++;
             } 
-            // fprintf(outFile,"%s\n%u %u\n%u\n",&file,((jIndex)/3),iIndex,max_color);
-            // for(int i=0;i<iIndex;i++)
-            // {
-            //     for(int j=0;j<jIndex*3;j++)
-            //     {
-            //         fprintf(outFile,"%u ",makeCopy[i][j]);
-            //     }
-            // }
 
             if(check[3]==1)
             {
-                // Get the parameters of paste
-                char pastePara[strlen(argv[cposition])];
+                char pastePara[100] = {'\0'};
                 strcpy(pastePara,argv[pposition]);
                 unsigned int index1[2] = {0,0};
                 char *token1 = strtok(pastePara, ",");
@@ -351,7 +342,6 @@ int main(int argc, char **argv)
                 }
             }
             fprintf(outFile,"%s\n%u %u\n%u\n",file,width,height,max_color);
-            printf("height %u",height);
             for(unsigned int i=0;i<height;i++)
             {
                 for(unsigned int j=0;j<width*3;j++)
@@ -422,9 +412,179 @@ int main(int argc, char **argv)
                     }
                 }  
             }
-            char name[4];
-            strcpy(name, "SBU");
-            fprintf(outFile,"%s\n%u %u\n%u ",name,width,height,colorTablesize);
+            fprintf(outFile,"%s\n%u %u\n%u ","SBU",width,height,colorTablesize);
+            for(unsigned int i=0;i<(colorTablesize);i++)
+            {
+                fprintf(outFile,"%u %u %u ",colorTable[i][0],colorTable[i][1],colorTable[i][2]);
+            }
+            fprintf(outFile,"\n");
+            unsigned int i=0;
+            while(i<storeIndex)
+            {
+                unsigned int runLength=1;
+                while(i + runLength < storeIndex && whereToStore[i] == whereToStore[i + runLength]) 
+                {
+                    runLength++;
+                }
+                if(runLength>1)
+                {
+                    fprintf(outFile,"*%u %u ", runLength, whereToStore[i]);
+                    i += runLength;
+                }
+                else 
+                {
+                    fprintf(outFile,"%u ", whereToStore[i]);
+                    i++;
+                }
+            }
+        }
+        else if(check[2]==1 &&!strcmp(&lastChar[strlen(argv[outputfile])-1],"u"))
+        {
+            // Get the parameters of copy
+            char copyPara[100] = {'\0'};
+            strcpy(copyPara,argv[cposition]);
+            unsigned int index[4] = {0,0,0,0};
+            int cursor=0;
+            char *token = strtok(copyPara, ",");
+            while(true) 
+            {
+                if(token==NULL)
+                    break;
+
+                index[cursor]=atoi(token);
+                token = strtok(NULL, ",");
+                cursor++;
+            }
+            unsigned int maxRow = (index[0]+index[3]);
+            if(maxRow>=height)
+            {
+                maxRow=height;
+            }
+            unsigned int maxCol = (index[1]+index[2]);
+            if(maxCol>=width)
+            {
+                maxCol=width;
+            }
+            // Array that will have copied elements
+            unsigned int makeCopy[maxRow-index[0]][(maxCol-index[1])*3];
+            
+            int iIndex = 0;
+            int jIndex=0;
+            // unsigned int correcter=0;
+            for(unsigned int i = index[0]; i<(maxRow);i++)
+            {
+                //If the pixel we try get is outside the image in terms of height
+                if(i>height)
+                    break;
+                
+                jIndex = 0;
+                for(unsigned int j = (index[1]*3); j<(maxCol*3);j+=3)
+                {
+                    //If the pixel we try get is outside the image in terms of width
+                    if(j>=(width*3))
+                        break;
+                    
+                    makeCopy[iIndex][jIndex++] = store[i][j];
+                    makeCopy[iIndex][jIndex++]=store[i][j+1];
+                    makeCopy[iIndex][jIndex++]=store[i][j+2];
+
+                }
+                iIndex++;
+            } 
+
+            if(check[3]==1)
+            {
+                char pastePara[100] = {'\0'};
+                strcpy(pastePara,argv[pposition]);
+                unsigned int index1[2] = {0,0};
+                char *token1 = strtok(pastePara, ",");
+                unsigned int cur=0;
+                while (true) 
+                {
+                    if(!token1)
+                        break;
+
+                    index1[cur]=atoi(token1);
+                    token1 = strtok(NULL, ",");
+                    cur++;
+                }
+
+                //Changing in Store
+                iIndex = 0;
+                unsigned int maxPasteRow = index1[0]+(maxRow-index[0]);
+                unsigned int maxPasteCol = index1[1]+(maxCol-index[1]);
+                if(maxPasteRow>=height)
+                {
+                    maxPasteRow=height;
+                }
+                if(maxPasteCol>=width)
+                {
+                    maxPasteCol=width;
+                }
+                for(unsigned int i = index1[0]; i<(maxPasteRow);i++)
+                {
+                    if(i>=height)
+                        break;
+
+                    jIndex = 0;
+                    for(unsigned int j = index1[1]*3; j<(maxPasteCol*3);j+=3)
+                    {
+                        if(j>=width*3)
+                            break;
+
+                        store[i][j] = makeCopy[iIndex][jIndex++];
+                        store[i][j+1] = makeCopy[iIndex][jIndex++];
+                        store[i][j+2] = makeCopy[iIndex][jIndex++];
+                    }
+                    iIndex++;
+                }
+            }
+            unsigned int colorTable[height*width][3];
+            unsigned int whereToStore[height*width];
+            //
+            unsigned int colorTablesize=0;
+            unsigned int tempIndex=0;
+            unsigned int storeIndex=0;
+            for(unsigned int i=0;i<height;i++)
+            {
+                for(unsigned int j=0;j<width*3;j+=3)
+                {
+                    if(i==0 && j==0)
+                    {
+                        colorTable[tempIndex][0]=store[i][j];
+                        colorTable[tempIndex][1]=store[i][j+1];
+                        colorTable[tempIndex++][2]=store[i][j+2];
+                        whereToStore[storeIndex++]=colorTablesize;
+                        colorTablesize++;
+                    }
+                    else
+                    {
+                        int maker=0;
+                        for(unsigned int k=0;k<(colorTablesize);k++)
+                        {
+                            if((colorTable[k][0]==store[i][j]) && (colorTable[k][1]==store[i][j+1]) && (colorTable[k][2]==store[i][j+2]) && storeIndex<(height*width))
+                            {
+                                whereToStore[storeIndex++]=k;
+                                maker=1;
+                                break;
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                        if(maker==0 && storeIndex<(height*width))
+                        {
+                                colorTable[tempIndex][0]=store[i][j];
+                                colorTable[tempIndex][1]=store[i][j+1];
+                                colorTable[tempIndex++][2]=store[i][j+2];
+                                whereToStore[storeIndex++]=colorTablesize;
+                                colorTablesize++;
+                        }
+                    }
+                }  
+            }
+            fprintf(outFile,"%s\n%u %u\n%u ","SBU",width,height,colorTablesize);
             for(unsigned int i=0;i<(colorTablesize);i++)
             {
                 fprintf(outFile,"%u %u %u ",colorTable[i][0],colorTable[i][1],colorTable[i][2]);
@@ -494,59 +654,114 @@ int main(int argc, char **argv)
                 pixels[pixelCount++]=atoi((char*)(input));
             }
         }
-        //checking for c if there
-        if(check[2]==1)
+        // checking for c if there
+        if(check[2]==1 &&!strcmp(&lastChar[strlen(argv[outputfile])-1],"u"))
         {
-            char copyPara[strlen(argv[cposition])];
-            strcpy(copyPara,argv[cposition]);
-            unsigned int index[4] = {0,0,0,0};
-            int cursor=0;
-            char *token = strtok(copyPara, ",");
-            while(true) 
+            //making a new file ppm
+            FILE *tempFile;
+            tempFile = fopen("result1.ppm","w");
+            fprintf(tempFile,"%s\n%u %u\n%u\n","P3",width,height,255);
+            
+            for(unsigned int i=0;i<height;i++)
             {
-                if(token==NULL)
-                    break;
+                for(unsigned int j=0;j<width;j++)
+                {
+                    unsigned int x = pixels[(i*width)+j];
+                    fprintf(tempFile,"%u %u %u ",colorStore[3*x],colorStore[(3*x)+1],colorStore[(3*x)+2]);
+                }
+                fprintf(tempFile,"\n");
+            }
+            fclose(tempFile);
+            FILE *tempFile1;
+            tempFile1 = fopen("result1.ppm","r");
+            char first[10];
+            fscanf(tempFile1,"%s",first);
+            //ppm file encoded into an array
+            unsigned int tempHeight, tempWidth;
+            fscanf(tempFile1, "%u %u", &tempWidth, &tempHeight);
+            
+            //getting the max color value from the PPM
+            unsigned int tempMax_color;
+            fscanf(tempFile1, "%u", &tempMax_color);
+            //Creating 2d array of height and width*3    
+            unsigned int tempStore[tempHeight][tempWidth*3]; //Width*3 as each pixel has 3 values rgb
 
-                index[cursor]=atoi(token);
-                token = strtok(NULL, ",");
-                cursor++;
-            }
-            unsigned int maxRow = (index[0]+index[3]);
-            if(maxRow>=height)
-            {
-                maxRow=height;
-            }
-            unsigned int maxCol = (index[1]+index[2]);
-            if(maxCol>=width)
-            {
-                maxCol=width;
-            }
-            unsigned int makeCopy[(maxRow-index[0])*(maxCol-index[1])];
-            int iIndex=0;
-            for(unsigned int i=index[0];i<maxRow;i++)
-            {
-                for(unsigned int j=index[1];j<maxCol;j++)
-                {  
-                    makeCopy[iIndex]=pixels[((i*width) + j)];
-                    iIndex++;
+            //Read the file and store it in the array
+            for(unsigned int i=0;i<tempHeight;i++)
+            {    
+                for(unsigned int j=0;j<tempWidth*3;j++)
+                {
+                    unsigned int tempInput;
+                    fscanf(tempFile1, "%u ", &tempInput);
+                    tempStore[i][j]=tempInput;
                 }
             }
-            
-            if(check[3])
+            //reading copy commands and pasting as well
+            char tempCopyPara[100] = {'\0'};
+            strcpy(tempCopyPara,argv[cposition]);
+            unsigned int index[4] = {0,0,0,0};
+            int tempCursor=0;
+            char *tempToken = strtok(tempCopyPara, ",");
+            while(true) 
             {
-                // Get the parameters of paste
-                char pastePara[strlen(argv[cposition])];
-                strcpy(pastePara,argv[pposition]);
+                if(tempToken==NULL)
+                    break;
+
+                index[tempCursor]=atoi(tempToken);
+                tempToken = strtok(NULL, ",");
+                tempCursor++;
+            }
+            unsigned int maxRow = (index[0]+index[3]);
+            if(maxRow>=tempHeight)
+            {
+                maxRow=tempHeight;
+            }
+            unsigned int maxCol = (index[1]+index[2]);
+            if(maxCol>=tempWidth)
+            {
+                maxCol=tempWidth;
+            }
+            // Array that will have copied elements
+            unsigned int tempMakeCopy[maxRow-index[0]][(maxCol-index[1])*3];
+            
+            int iIndex = 0;
+            int jIndex=0;
+            // unsigned int correcter=0;
+            for(unsigned int i = index[0]; i<(maxRow);i++)
+            {
+                //If the pixel we try get is outside the image in terms of height
+                if(i>height)
+                    break;
+                
+                jIndex = 0;
+                for(unsigned int j = (index[1]*3); j<(maxCol*3);j+=3)
+                {
+                    //If the pixel we try get is outside the image in terms of width
+                    if(j>=(width*3))
+                        break;
+                    
+                    tempMakeCopy[iIndex][jIndex++] = tempStore[i][j];
+                    tempMakeCopy[iIndex][jIndex++]=tempStore[i][j+1];
+                    tempMakeCopy[iIndex][jIndex++]=tempStore[i][j+2];
+
+                }
+                iIndex++;
+            } 
+            //read copy command and stores in tempstore array in ppm
+            if(check[3]==1)
+            {
+                char tempPastePara[100] = {'\0'};
+                strcpy(tempPastePara,argv[pposition]);
                 unsigned int index1[2] = {0,0};
-                char *token1 = strtok(pastePara, ",");
+                char *tempToken1 = strtok(tempPastePara, ",");
                 unsigned int cur=0;
                 while (true) 
                 {
-                    if(!token1)
+                    if(!tempToken1)
                         break;
 
-                    index1[cur]=atoi(token1);
-                    token1 = strtok(NULL, ",");
+                    index1[cur]=atoi(tempToken1);
+                    tempToken1 = strtok(NULL, ",");
                     cur++;
                 }
 
@@ -554,56 +769,261 @@ int main(int argc, char **argv)
                 iIndex = 0;
                 unsigned int maxPasteRow = index1[0]+(maxRow-index[0]);
                 unsigned int maxPasteCol = index1[1]+(maxCol-index[1]);
-                if(maxPasteRow>=height)
+                if(maxPasteRow>=tempHeight)
                 {
-                    maxPasteRow=height;
+                    maxPasteRow=tempHeight;
                 }
-                if(maxPasteCol>=width)
+                if(maxPasteCol>=tempWidth)
                 {
-                    maxPasteCol=width;
+                    maxPasteCol=tempWidth;
                 }
-                int index2=0;
-                for(unsigned int i=index1[0];i<maxPasteRow;i++)
+                for(unsigned int i = index1[0]; i<(maxPasteRow);i++)
                 {
-                    for(unsigned int j=index1[1];j<maxPasteCol;j++)
+                    if(i>=tempHeight)
+                        break;
+
+                    jIndex = 0;
+                    for(unsigned int j = index1[1]*3; j<(maxPasteCol*3);j+=3)
                     {
-                        pixels[(i*width) + j]=makeCopy[index2];
-                        index2++;
+                        if(j>=tempWidth*3)
+                            break;
+
+                        tempStore[i][j] = tempMakeCopy[iIndex][jIndex++];
+                        tempStore[i][j+1] = tempMakeCopy[iIndex][jIndex++];
+                        tempStore[i][j+2] = tempMakeCopy[iIndex][jIndex++];
                     }
+                    iIndex++;
                 }
             }
-            fprintf(outFile,"%s\n%u %u\n%u",file,width,height,numOfColors);
-            fprintf(outFile,"\n");
-            for(unsigned int i=0;i<numOfColors*3;i+=3)
+            // now convert ppm to sbu
+
+            unsigned int tempColorTable[tempHeight*tempWidth][3];
+            unsigned int tempWhereToStore[tempHeight*tempWidth];
+            //
+            unsigned int tempColorTablesize=0;
+            unsigned int TtempIndex=0;
+            unsigned int TstoreIndex=0;
+            for(unsigned int i=0;i<tempHeight;i++)
             {
-                fprintf(outFile,"%u %u %u ",colorStore[i],colorStore[i+1],colorStore[i+2]);
+                for(unsigned int j=0;j<tempWidth*3;j+=3)
+                {
+                    if(i==0 && j==0)
+                    {
+                        tempColorTable[TtempIndex][0]=tempStore[i][j];
+                        tempColorTable[TtempIndex][1]=tempStore[i][j+1];
+                        tempColorTable[TtempIndex++][2]=tempStore[i][j+2];
+                        tempWhereToStore[TstoreIndex++]=tempColorTablesize;
+                        tempColorTablesize++;
+                    }
+                    else
+                    {
+                        int maker=0;
+                        for(unsigned int k=0;k<(tempColorTablesize);k++)
+                        {
+                            if((tempColorTable[k][0]==tempStore[i][j]) && (tempColorTable[k][1]==tempStore[i][j+1]) && (tempColorTable[k][2]==tempStore[i][j+2]) && TstoreIndex<(tempHeight*tempWidth))
+                            {
+                                tempWhereToStore[TstoreIndex++]=k;
+                                maker=1;
+                                break;
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                        if(maker==0 && TstoreIndex<(tempHeight*tempWidth))
+                        {
+                                tempColorTable[TtempIndex][0]=tempStore[i][j];
+                                tempColorTable[TtempIndex][1]=tempStore[i][j+1];
+                                tempColorTable[TtempIndex++][2]=tempStore[i][j+2];
+                                tempWhereToStore[TstoreIndex++]=tempColorTablesize;
+                                tempColorTablesize++;
+                        }
+                    }
+                }  
+            }
+            fprintf(outFile,"%s\n%u %u\n%u ","SBU",width,height,tempColorTablesize);
+            for(unsigned int i=0;i<(tempColorTablesize);i++)
+            {
+                fprintf(outFile,"%u %u %u ",tempColorTable[i][0],tempColorTable[i][1],tempColorTable[i][2]);
             }
             fprintf(outFile,"\n");
             unsigned int i=0;
-            while(i<pixelCount)
+            while(i<TstoreIndex)
             {
                 unsigned int runLength=1;
-                while(i + runLength < pixelCount && pixels[i] == pixels[i + runLength]) 
+                while(i + runLength < TstoreIndex && tempWhereToStore[i] == tempWhereToStore[i + runLength]) 
                 {
                     runLength++;
                 }
                 if(runLength>1)
                 {
-                    fprintf(outFile,"*%u %u ", runLength, pixels[i]);
+                    fprintf(outFile,"*%u %u ", runLength, tempWhereToStore[i]);
                     i += runLength;
                 }
                 else 
                 {
-                    fprintf(outFile,"%u ", pixels[i]);
+                    fprintf(outFile,"%u ", tempWhereToStore[i]);
                     i++;
                 }
             }
+            fclose(tempFile1);
+        }
+        else if(check[2]==1 && !strcmp(&lastChar[strlen(argv[outputfile])-1],"m"))
+        {
+            //making a new file ppm
+            FILE *tempFile;
+            tempFile = fopen("result1.ppm","w");
+            fprintf(tempFile,"%s\n%u %u\n%u\n","P3",width,height,255);
+            
+            for(unsigned int i=0;i<height;i++)
+            {
+                for(unsigned int j=0;j<width;j++)
+                {
+                    unsigned int x = pixels[(i*width)+j];
+                    fprintf(tempFile,"%u %u %u ",colorStore[3*x],colorStore[(3*x)+1],colorStore[(3*x)+2]);
+                }
+                fprintf(tempFile,"\n");
+            }
+            fclose(tempFile);
+            FILE *tempFile1;
+            tempFile1 = fopen("result1.ppm","r");
+            char first[10];
+            fscanf(tempFile1,"%s",first);
+            //ppm file encoded into an array
+            unsigned int tempHeight, tempWidth;
+            fscanf(tempFile1, "%u %u", &tempWidth, &tempHeight);
+            
+            //getting the max color value from the PPM
+            unsigned int tempMax_color;
+            fscanf(tempFile1, "%u", &tempMax_color);
+            //Creating 2d array of height and width*3    
+            unsigned int tempStore[tempHeight][tempWidth*3]; //Width*3 as each pixel has 3 values rgb
+
+            //Read the file and store it in the array
+            for(unsigned int i=0;i<tempHeight;i++)
+            {    
+                for(unsigned int j=0;j<tempWidth*3;j++)
+                {
+                    unsigned int tempInput;
+                    fscanf(tempFile1, "%u ", &tempInput);
+                    tempStore[i][j]=tempInput;
+                }
+            }
+            //reading copy commands and pasting as well
+            char tempCopyPara[100] = {'\0'};
+            strcpy(tempCopyPara,argv[cposition]);
+            unsigned int index[4] = {0,0,0,0};
+            int tempCursor=0;
+            char *tempToken = strtok(tempCopyPara, ",");
+            while(true) 
+            {
+                if(tempToken==NULL)
+                    break;
+
+                index[tempCursor]=atoi(tempToken);
+                tempToken = strtok(NULL, ",");
+                tempCursor++;
+            }
+            unsigned int maxRow = (index[0]+index[3]);
+            if(maxRow>=tempHeight)
+            {
+                maxRow=tempHeight;
+            }
+            unsigned int maxCol = (index[1]+index[2]);
+            if(maxCol>=tempWidth)
+            {
+                maxCol=tempWidth;
+            }
+            // Array that will have copied elements
+            unsigned int tempMakeCopy[maxRow-index[0]][(maxCol-index[1])*3];
+            
+            int iIndex = 0;
+            int jIndex=0;
+            // unsigned int correcter=0;
+            for(unsigned int i = index[0]; i<(maxRow);i++)
+            {
+                //If the pixel we try get is outside the image in terms of height
+                if(i>height)
+                    break;
+                
+                jIndex = 0;
+                for(unsigned int j = (index[1]*3); j<(maxCol*3);j+=3)
+                {
+                    //If the pixel we try get is outside the image in terms of width
+                    if(j>=(width*3))
+                        break;
+                    
+                    tempMakeCopy[iIndex][jIndex++] = tempStore[i][j];
+                    tempMakeCopy[iIndex][jIndex++]=tempStore[i][j+1];
+                    tempMakeCopy[iIndex][jIndex++]=tempStore[i][j+2];
+
+                }
+                iIndex++;
+            } 
+            //read copy command and stores in tempstore array in ppm
+            if(check[3]==1)
+            {
+                char tempPastePara[100] = {'\0'};
+                strcpy(tempPastePara,argv[pposition]);
+                unsigned int index1[2] = {0,0};
+                char *tempToken1 = strtok(tempPastePara, ",");
+                unsigned int cur=0;
+                while (true) 
+                {
+                    if(!tempToken1)
+                        break;
+
+                    index1[cur]=atoi(tempToken1);
+                    tempToken1 = strtok(NULL, ",");
+                    cur++;
+                }
+
+                //Changing in Store
+                iIndex = 0;
+                unsigned int maxPasteRow = index1[0]+(maxRow-index[0]);
+                unsigned int maxPasteCol = index1[1]+(maxCol-index[1]);
+                if(maxPasteRow>=tempHeight)
+                {
+                    maxPasteRow=tempHeight;
+                }
+                if(maxPasteCol>=tempWidth)
+                {
+                    maxPasteCol=tempWidth;
+                }
+                for(unsigned int i = index1[0]; i<(maxPasteRow);i++)
+                {
+                    if(i>=tempHeight)
+                        break;
+
+                    jIndex = 0;
+                    for(unsigned int j = index1[1]*3; j<(maxPasteCol*3);j+=3)
+                    {
+                        if(j>=tempWidth*3)
+                            break;
+
+                        tempStore[i][j] = tempMakeCopy[iIndex][jIndex++];
+                        tempStore[i][j+1] = tempMakeCopy[iIndex][jIndex++];
+                        tempStore[i][j+2] = tempMakeCopy[iIndex][jIndex++];
+                    }
+                    iIndex++;
+                }
+            }
+            fprintf(outFile,"%s\n%u %u\n%u\n","P3",tempWidth,tempHeight,255);
+            for(unsigned int i=0;i<tempHeight;i++)
+            {
+                for(unsigned int j=0;j<tempWidth*3;j++)
+                {
+                    fprintf(outFile,"%u ",tempStore[i][j]);
+                }
+                fprintf(outFile,"\n");
+            }
+            fprintf(outFile,"\n");
+
         }
         else if(check[2]==0 && !strcmp(&lastChar[strlen(argv[outputfile])-1],"m"))
         {
-            char name[3];
-            strcpy(name, "P3");
-            fprintf(outFile,"%s\n%u %u\n%u\n",name,width,height,255);
+            fprintf(outFile,"%s\n%u %u\n%u\n","P3",width,height,255);
             
             for(unsigned int i=0;i<height;i++)
             {
@@ -615,7 +1035,7 @@ int main(int argc, char **argv)
                 fprintf(outFile,"\n");
             }
         }
-        //printing sbu file
+        // //printing sbu file
         else
         {
             fprintf(outFile,"%s\n%u %u\n%u",file,width,height,numOfColors);
